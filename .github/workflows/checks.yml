@@ -1,0 +1,37 @@
+on:
+  pull_request:
+jobs:
+  practices:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: dtolnay/rust-toolchain@nightly
+        with:
+          components: rustfmt, clippy
+      - uses: extractions/setup-just@v4
+      - run: cargo fmt --check
+      - run: cargo doc
+      - run: cargo package
+      - run: cargo clippy
+      - run: |
+          git ls-files '*.md' -z | xargs -0 docker run --rm -v "$PWD:/work" \
+          -w /work ghcr.io/igorshubovych/markdownlint-cli:v0.41.0
+      - run: |
+          git ls-files '*.yml' | xargs docker run --rm -v "$PWD:/work" \
+          -w /work cytopia/yamllint
+      - run: |
+          git ls-files '*.toml' -z | xargs -0 docker run --rm -v "$PWD:/work" \
+          -w /work tamasfe/taplo:0.10.0 fmt --check
+      - run: just --fmt --check
+  nightly:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: dtolnay/rust-toolchain@nightly
+      - run: cargo build
+  msrv:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: dtolnay/rust-toolchain@nightly
+      - run: cargo build
