@@ -1,0 +1,17 @@
+on:
+  workflow_dispatch:
+permissions:
+  id-token: write
+  contents: write
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    if: github.repository == 'smallvec/smallvec-macro'
+    steps:
+      - uses: actions/checkout@v7
+      - uses: dtolnay/rust-toolchain@nightly
+      - uses: rust-lang/crates-io-auth-action@v1
+        id: auth
+      - run: cargo publish
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ steps.auth.outputs.token }}

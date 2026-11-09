@@ -1,15 +1,16 @@
 [package]
 name = "smallvec-macro"
-version = "0.0.0"
-edition = "2024"
-rust-version = "1.86"
+version = "0.0.1"
+edition = "2021"
+rust-version = "1.78"
 authors = ["Alejandro Vaz <alejandro.vaz.myt@gmail.com>"]
 license = "MIT"
 repository = "https://github.com/smallvec/smallvec-macro"
 homepage = "https://smallvec.rs"
 description = "proc-macro crate for SmallVec"
-keywords = []
-categories = []
+keywords = ["smallvec", "macro", "vector", "collection", "no-std"]
+categories = ["data-structures", "rust-patterns"]
+exclude = [".github/", "justfile", "rustfmt.toml", ".gitignore"]
 
 [lib]
 proc-macro = true
@@ -50,3 +51,8 @@ all = "warn"
 
 [lints.rustdoc]
 all = "warn"
+
+[lints.cargo]
+unknown_lints = "deny"
+unused_dependencies = "deny"
+non_kebab_case_features = "deny"

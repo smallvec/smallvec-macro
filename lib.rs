@@ -1,3 +1,5 @@
+#![doc = include_str!("./README.md")]
+
 use proc_macro::{
     Delimiter,
     TokenStream,
@@ -5,6 +7,7 @@ use proc_macro::{
 };
 
 #[proc_macro_attribute]
+#[doc = include_str!("./docs/syntax.md")]
 pub fn syntax(attribute: TokenStream, item: TokenStream) -> TokenStream {
     let mut element = Vec::<TokenTree>::new();
     let mut iterator = item.into_iter().fuse();
@@ -13,7 +16,9 @@ pub fn syntax(attribute: TokenStream, item: TokenStream) -> TokenStream {
             [
                 Some(TokenTree::Punct(punctuation)),
                 Some(TokenTree::Group(group))
-            ] if (punctuation.as_char(), group.delimiter()) == ('#', Delimiter::Bracket) => {
+            ] if let Delimiter::Bracket = group.delimiter()
+                && punctuation.as_char() == '#' =>
+            {
                 element.extend([punctuation.into(), group.into()]);
             }
             mut trees => {
@@ -23,8 +28,8 @@ pub fn syntax(attribute: TokenStream, item: TokenStream) -> TokenStream {
                         .chain(trees.iter_mut().flat_map(Option::take))
                         .chain(iterator)
                 );
-                return element.into_iter().collect();
+                break element.into_iter().collect();
             }
-        };
+        }
     }
 }
